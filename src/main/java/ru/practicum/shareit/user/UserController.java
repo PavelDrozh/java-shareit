@@ -30,7 +30,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
 
-    private final static String ID_PATH = "/{id}";
+    private static final String ID_PATH = "/{id}";
 
     UserService service;
 

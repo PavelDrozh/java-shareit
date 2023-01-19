@@ -7,6 +7,8 @@ import ru.practicum.shareit.item.model.Item;
 
 public interface ItemMapper {
     Item itemCreateDtoToItem(ItemCreateDto dto);
+
     Item itemUpdateDtoToItem(ItemUpdateDto dto);
+
     ItemResponseDto itemToItemRequestDto(Item item);
 }

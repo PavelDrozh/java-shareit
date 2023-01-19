@@ -33,8 +33,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ItemController {
 
-    private final static String ID_PATH = "/{itemId}";
-    private final static String SEARCH_PATH = "/search";
+    private static final  String ID_PATH = "/{itemId}";
+    private static final  String SEARCH_PATH = "/search";
     private static final String USER_HEADER = "X-Sharer-User-Id";
 
     ItemService service;

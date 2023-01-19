@@ -7,6 +7,8 @@ import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 public interface UserMapper {
     User userCreatorDtoToUser(UserCreatorDto dto);
+
     User userUpdateDtoToUser(UserUpdateDto dto);
+
     UserResponseDto userToUserResponseDto(User source);
 }
