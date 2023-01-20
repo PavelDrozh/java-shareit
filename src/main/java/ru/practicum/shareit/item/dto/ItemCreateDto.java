@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -17,14 +16,10 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Builder
 public class ItemCreateDto {
-    @NotNull
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "Отсутствует наименование вещи")
     String name;
-    @NotNull
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "Отсутствует описание вещи")
     String description;
-    @NotNull
+    @NotNull(message = "Отсутствует статус вещи")
     Boolean available;
 }
