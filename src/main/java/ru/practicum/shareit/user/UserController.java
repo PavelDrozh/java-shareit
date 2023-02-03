@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ru.practicum.shareit.user.dto.UserCreatorDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -55,7 +56,7 @@ public class UserController {
     }
 
     @DeleteMapping(ID_PATH)
-    public UserResponseDto deleteUserById(@PathVariable long id) {
-        return service.deleteUser(id);
+    public void deleteUserById(@PathVariable long id) {
+        service.deleteUser(id);
     }
 }
