@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.mapper;
 
-import ru.practicum.shareit.item.dto.ItemCreateDto;
-import ru.practicum.shareit.item.dto.ItemResponseDto;
-import ru.practicum.shareit.item.dto.ItemResponseForOwner;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 
 public interface ItemMapper {
@@ -14,5 +11,7 @@ public interface ItemMapper {
     ItemResponseDto itemToItemResponseDto(Item item);
 
     ItemResponseForOwner itemToItemResponseForOwner(Item item);
+
+    ItemInfoInBooking itemToItemInfo(Item item);
 
 }
