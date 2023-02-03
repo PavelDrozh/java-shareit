@@ -9,10 +9,10 @@ import ru.practicum.shareit.user.model.User;
 
 public interface BookingMapper {
 
-    Booking creationBookingDtoToBooking (BookingCreationDto dto, Item item, User booker);
+    Booking creationBookingDtoToBooking(BookingCreationDto dto, Item item, User booker);
 
-    BookingResponseDto bookingToBookingResponseDto (Booking booking);
+    BookingResponseDto bookingToBookingResponseDto(Booking booking);
 
-    BookingInfoInItem bookingToBookingInfoInItem (Booking booking);
+    BookingInfoInItem bookingToBookingInfoInItem(Booking booking);
 
 }

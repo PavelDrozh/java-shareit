@@ -11,25 +11,33 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdAndStatusInOrderByStartDesc(Long bookerId, Collection<BookStatus> status);
 
-    List<Booking> findAllByBookerIdAndStatusInAndEndIsBeforeOrderByStartDesc
-            (Long bookerId, Collection<BookStatus> status, LocalDateTime end);
+    List<Booking> findAllByBookerIdAndStatusInAndEndIsBeforeOrderByStartDesc(Long bookerId,
+                                                                             Collection<BookStatus> status,
+                                                                             LocalDateTime end);
 
-    List<Booking> findAllByBookerIdAndStatusInAndStartIsAfterOrderByStartDesc
-            (Long bookerId, Collection<BookStatus> status, LocalDateTime start);
+    List<Booking> findAllByBookerIdAndStatusInAndStartIsAfterOrderByStartDesc(Long bookerId,
+                                                                              Collection<BookStatus> status,
+                                                                              LocalDateTime start);
 
-    List<Booking> findAllByBookerIdAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc
-            (Long bookerId, Collection<BookStatus> status, LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByBookerIdAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long bookerId,
+                                                                                          Collection<BookStatus> status,
+                                                                                            LocalDateTime start,
+                                                                                            LocalDateTime end);
 
     List<Booking> findAllByItem_OwnerAndStatusInOrderByStartDesc(Long itemOwner, Collection<BookStatus> status);
 
-    List<Booking> findAllByItem_OwnerAndStatusInAndEndIsBeforeOrderByStartDesc
-            (Long bookerId, Collection<BookStatus> status, LocalDateTime end);
+    List<Booking> findAllByItem_OwnerAndStatusInAndEndIsBeforeOrderByStartDesc(Long bookerId,
+                                                                               Collection<BookStatus> status,
+                                                                               LocalDateTime end);
 
-    List<Booking> findAllByItem_OwnerAndStatusInAndStartIsAfterOrderByStartDesc
-            (Long bookerId, Collection<BookStatus> status, LocalDateTime start);
+    List<Booking> findAllByItem_OwnerAndStatusInAndStartIsAfterOrderByStartDesc(Long bookerId,
+                                                                                Collection<BookStatus> status,
+                                                                                LocalDateTime start);
 
-    List<Booking> findAllByItem_OwnerAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc
-            (Long bookerId, Collection<BookStatus> status, LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByItem_OwnerAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long bookerId,
+                                                                                         Collection<BookStatus> status,
+                                                                                              LocalDateTime start,
+                                                                                              LocalDateTime end);
 
     Booking findFirstByItemIdAndEndBeforeOrderByEndDesc(Long itemId, LocalDateTime end);
 

@@ -81,6 +81,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return bookingMapper.bookingToBookingInfoInItem(dto);
     }
+
     @Override
     public ItemResponseForOwner getById(long itemId, long userId) {
         userService.getById(userId);
@@ -174,8 +175,8 @@ public class ItemServiceImpl implements ItemService {
     public CommentResponseDto createComment(CommentCreateDto dto, long itemId, long userId) {
         User author = userService.getUser(userId);
         Item item = getItem(itemId);
-        if (bookingRepository.findAllByBookerIdAndStatusInAndEndIsBeforeOrderByStartDesc
-                (userId, List.of(BookStatus.APPROVED), LocalDateTime.now()).isEmpty()) {
+        if (bookingRepository.findAllByBookerIdAndStatusInAndEndIsBeforeOrderByStartDesc(userId,
+                List.of(BookStatus.APPROVED), LocalDateTime.now()).isEmpty()) {
             throw new ItemNotAvailableException("Для создания комментария необходимо хотя бы один раз арендовать вещь");
         }
         Comment comment = commentMapper.commentCreateDtoToComment(dto, author, item, LocalDateTime.now());
