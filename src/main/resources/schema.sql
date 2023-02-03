@@ -18,6 +18,14 @@ CREATE TABLE IF NOT EXISTS booking (
    item_id BIGINT NOT NULL REFERENCES items (id),
    booker_id BIGINT NOT NULL REFERENCES users (id),
    start_booking TIMESTAMP NOT NULL,
-   end_booking TIMESTAMP,
+   end_booking TIMESTAMP NOT NULL,
    status VARCHAR(512) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
+    text VARCHAR(512) NOT NULL,
+    item_id BIGINT NOT NULL REFERENCES items (id),
+    author_id BIGINT NOT NULL REFERENCES users (id),
+    created TIMESTAMP NOT NULL
 );
