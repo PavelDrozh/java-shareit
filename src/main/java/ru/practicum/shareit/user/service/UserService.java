@@ -41,7 +41,7 @@ public class UserService {
     public User getUser(long id) {
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
-            throw new UserNotFoundException("Пользователь с таким id не найден");
+            throw new UserNotFoundException(String.format("Пользователь с id = %d не найден", id));
         }
         return user.get();
     }

@@ -28,7 +28,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "users", schema = "public")
 public class User {
-    @Id()
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "name", nullable = false)

@@ -153,7 +153,7 @@ public class ItemServiceImpl implements ItemService {
         try {
             item = repository.getById(itemId);
         } catch (EntityNotFoundException e) {
-            throw new ItemNotFoundException("Вещи с таким id не найдено");
+            throw new ItemNotFoundException(String.format("Вещи c id = %d не найдено", itemId));
         }
         return item;
     }

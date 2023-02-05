@@ -47,7 +47,7 @@ public class BookingService {
         User booker = getUser(userId);
         Item item = getItem(dto.getItemId());
         if (!item.getAvailable()) {
-            throw new ItemNotAvailableException("Вещь недоступна");
+            throw new ItemNotAvailableException(String.format("Вещь (%s) недоступна", item.getName()));
         }
         if (item.getOwner().equals(booker.getId())) {
             throw new ItemNotFoundException("Владелец не должен бронировать бронировать свою вещь");
@@ -61,7 +61,7 @@ public class BookingService {
     private User getUser(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            throw new UserNotFoundException("Пользователь с таким id не найден");
+            throw new UserNotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
         return user.get();
     }
@@ -69,7 +69,7 @@ public class BookingService {
     private Item getItem(Long itemId) {
         Optional<Item> item = itemRepository.findById(itemId);
         if (item.isEmpty()) {
-            throw new ItemNotFoundException("Вещь с таким id не найдена");
+            throw new ItemNotFoundException(String.format("Вещь id = %d не найдена", itemId));
         }
         return item.get();
     }
@@ -102,7 +102,7 @@ public class BookingService {
 
     private void setStatus(Booking booking, BookStatus status) {
         if (booking.getStatus().equals(status)) {
-            throw new NotUpdatedStatusException("Такой статус уже установлен");
+            throw new NotUpdatedStatusException(String.format("Cтатус = %s, уже установлен", status.name()));
         }
         booking.setStatus(status);
     }
@@ -110,7 +110,7 @@ public class BookingService {
     private Booking getBooking(Long bookingId) {
         Optional<Booking> booking = bookingRepo.findById(bookingId);
         if (booking.isEmpty()) {
-            throw new BookingNotFoundException("Бронирование с таким id не найдено");
+            throw new BookingNotFoundException(String.format("Бронирование с id = %d не найдено", bookingId));
         }
         return booking.get();
     }
