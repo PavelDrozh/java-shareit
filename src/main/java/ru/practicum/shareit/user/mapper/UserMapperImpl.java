@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserCreatorDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -10,18 +10,18 @@ import ru.practicum.shareit.user.dto.UserUpdateDto;
 public class UserMapperImpl implements UserMapper {
     @Override
     public User userCreatorDtoToUser(UserCreatorDto dto) {
-        return User.builder()
-                .email(dto.getEmail())
-                .name(dto.getName())
-                .build();
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setName(dto.getName());
+        return user;
     }
 
     @Override
     public User userUpdateDtoToUser(UserUpdateDto dto) {
-        return User.builder()
-                .email(dto.getEmail())
-                .name(dto.getName())
-                .build();
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setName(dto.getName());
+        return user;
     }
 
     @Override

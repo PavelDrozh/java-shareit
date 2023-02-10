@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemResponseForOwner;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
+import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -35,17 +39,18 @@ public class ItemController {
 
     private static final  String ID_PATH = "/{itemId}";
     private static final  String SEARCH_PATH = "/search";
+    private static final  String COMMENT_PATH = "/comment";
     private static final String USER_HEADER = "X-Sharer-User-Id";
 
     ItemService service;
 
     @GetMapping
-    public List<ItemResponseDto> getAllByUser(@RequestHeader(USER_HEADER) long userId) {
+    public List<ItemResponseForOwner> getAllByUser(@RequestHeader(USER_HEADER) long userId) {
         return service.getAllByUserId(userId);
     }
 
     @GetMapping(ID_PATH)
-    public ItemResponseDto getById(@PathVariable long itemId, @RequestHeader(USER_HEADER) long userId) {
+    public ItemResponseForOwner getById(@PathVariable long itemId, @RequestHeader(USER_HEADER) long userId) {
         return service.getById(itemId, userId);
     }
 
@@ -69,7 +74,14 @@ public class ItemController {
     }
 
     @DeleteMapping(ID_PATH)
-    public ItemResponseDto delete(@PathVariable long itemId, @RequestHeader(USER_HEADER) long userId) {
-        return service.deleteItem(itemId, userId);
+    public void delete(@PathVariable long itemId, @RequestHeader(USER_HEADER) long userId) {
+        service.deleteItem(itemId, userId);
+    }
+
+    @PostMapping(ID_PATH + COMMENT_PATH)
+    public CommentResponseDto createComment(@RequestBody @Valid CommentCreateDto dto,
+                                            @RequestHeader(USER_HEADER) long userId,
+                                            @PathVariable long itemId) {
+        return service.createComment(dto, itemId,  userId);
     }
 }

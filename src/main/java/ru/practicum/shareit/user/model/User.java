@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,56 +8,40 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.GenerationType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.
  */
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @ToString
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 @Entity
-@Table(name = "items", schema = "public")
-public class Item {
+@Table(name = "users", schema = "public")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
-    @Column(name = "owner", nullable = false)
-    Long owner;
-
     @Column(name = "name", nullable = false)
     String name;
-
-    @Column(name = "description", nullable = false)
-    String description;
-
-    @Column(name = "available", nullable = false)
-    Boolean available;
-
-    @OneToMany
-    @JoinColumn(name = "comments")
-    List<Comment> comments;
+    @Column(name = "email", nullable = false, unique = true)
+    String email;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Item item = (Item) o;
-        return id != null && Objects.equals(id, item.id);
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
     }
 
     @Override
