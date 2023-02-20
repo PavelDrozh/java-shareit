@@ -5,13 +5,21 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT pk_user PRIMARY KEY (id)
     );
 
+CREATE TABLE IF NOT EXISTS requests (
+                                        id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
+                                        description VARCHAR(512) NOT NULL,
+                                        created TIMESTAMP NOT NULL,
+                                        creator BIGINT NOT NULL REFERENCES users (id)
+);
+
 CREATE TABLE IF NOT EXISTS items (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
     owner BIGINT NOT NULL REFERENCES users (id),
     name VARCHAR(255) NOT NULL,
     description VARCHAR(512) NOT NULL,
-    available BOOLEAN NOT NULL
-    );
+    available BOOLEAN NOT NULL,
+    request_id BIGINT REFERENCES requests (id)
+);
 
 CREATE TABLE IF NOT EXISTS booking (
    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,

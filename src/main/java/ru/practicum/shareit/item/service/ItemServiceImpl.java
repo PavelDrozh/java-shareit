@@ -4,18 +4,18 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingInfoInItem;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.item.dto.ItemCreateDto;
-import ru.practicum.shareit.item.dto.ItemResponseDto;
-import ru.practicum.shareit.item.dto.ItemResponseForOwner;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.dto.CommentResponseDto;
-import ru.practicum.shareit.item.dto.CommentCreateDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.exceptions.IllegalUserException;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailableException;
 import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
@@ -25,6 +25,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -47,11 +49,16 @@ public class ItemServiceImpl implements ItemService {
     BookingRepository bookingRepository;
     CommentMapper commentMapper;
     BookingMapper bookingMapper;
+    ItemRequestService itemRequestService;
+
 
     @Override
-    public List<ItemResponseForOwner> getAllByUserId(long userId) {
+    @Transactional(readOnly = true)
+    public List<ItemResponseForOwner> getAllByUserId(long userId, int from, int size) {
         userService.getById(userId);
-        List<ItemResponseForOwner> items = repository.findAllByOwner(userId).stream()
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        Page<Item> itemsPage = repository.findAllByOwner(userId, pageable);
+        List<ItemResponseForOwner> items = itemsPage.getContent().stream()
                 .map(mapper::itemToItemResponseForOwner)
                 .collect(Collectors.toList());
         items.forEach(i -> i.setComments(getComments(i.getId())));
@@ -83,6 +90,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemResponseForOwner getById(long itemId, long userId) {
         userService.getById(userId);
         Item item = getItem(itemId);
@@ -96,11 +104,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponseDto> getByNameOrDescription(String str, long userId) {
+    @Transactional(readOnly = true)
+    public List<ItemResponseDto> getByNameOrDescription(String str, long userId, int from, int size) {
         userService.getById(userId);
         List<Item> items = new ArrayList<>();
+        Pageable page = PageRequest.of(from / size, size);
         if (!str.isBlank() && !str.isEmpty()) {
-            items = repository.findByDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(str, str);
+            items = repository.findByDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(str, str, page)
+                    .getContent();
         }
         List<ItemResponseDto> response = items.stream()
                 .filter(Item::getAvailable)
@@ -111,15 +122,27 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemResponseDto createItem(ItemCreateDto dto, long userId) {
         userService.getById(userId);
         Item item = mapper.itemCreateDtoToItem(dto);
         item.setOwner(userId);
+        ItemRequest request = null;
+        Long requestId = dto.getRequestId();
+        if (requestId != null) {
+            request = itemRequestService.getRequestById(requestId);
+        }
+        item.setRequest(request);
         Item created = repository.save(item);
+        if (request != null) {
+            request.getItems().add(created);
+            itemRequestService.save(request);
+        }
         return mapper.itemToItemResponseDto(created);
     }
 
     @Override
+    @Transactional
     public ItemResponseDto updateItem(ItemUpdateDto dto, long userId, long itemId) {
         userService.getById(userId);
         Item item = getItem(itemId);
@@ -148,7 +171,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private Item getItem(long itemId) {
+    public Item getItem(long itemId) {
         Item item;
         try {
             item = repository.getById(itemId);
@@ -159,6 +182,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void deleteItem(long id, long userId) {
         userService.getById(userId);
         Item item = getItem(id);
@@ -172,11 +196,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentResponseDto createComment(CommentCreateDto dto, long itemId, long userId) {
         User author = userService.getUser(userId);
         Item item = getItem(itemId);
+        Pageable page = PageRequest.of(0, 10);
         if (bookingRepository.findAllByBookerIdAndStatusInAndEndIsBeforeOrderByStartDesc(userId,
-                List.of(BookStatus.APPROVED), LocalDateTime.now()).isEmpty()) {
+                List.of(BookStatus.APPROVED), LocalDateTime.now(), page).isEmpty()) {
             throw new ItemNotAvailableException("Для создания комментария необходимо хотя бы один раз арендовать вещь");
         }
         Comment comment = commentMapper.commentCreateDtoToComment(dto, author, item, LocalDateTime.now());

@@ -4,7 +4,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserCreatorDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -27,12 +30,15 @@ public class UserService {
     UserRepository repository;
     UserMapper mapper;
 
-    public List<UserResponseDto> getAll() {
-        return repository.findAll()
+    @Transactional(readOnly = true)
+    public List<UserResponseDto> getAll(int from, int size) {
+        Pageable page = PageRequest.of(from / size, size);
+        return repository.findAll(page).getContent()
                 .stream().map(mapper::userToUserResponseDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto getById(long id) {
         User result = getUser(id);
         return mapper.userToUserResponseDto(result);
@@ -53,12 +59,14 @@ public class UserService {
         }
     }
 
+    @Transactional
     public UserResponseDto createUser(UserCreatorDto dto) {
         User user = mapper.userCreatorDtoToUser(dto);
         User created = repository.save(user);
         return mapper.userToUserResponseDto(created);
     }
 
+    @Transactional
     public UserResponseDto updateUser(UserUpdateDto dto, long id) {
         User user = repository.getById(id);
         if (dto.getEmail() != null) {
@@ -72,6 +80,7 @@ public class UserService {
         return mapper.userToUserResponseDto(updated);
     }
 
+    @Transactional
     public void deleteUser(long id) {
         repository.deleteById(id);
     }

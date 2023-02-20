@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +24,7 @@ import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.List;
 
 /**
@@ -35,6 +34,7 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Validated
 public class ItemController {
 
     private static final  String ID_PATH = "/{itemId}";
@@ -45,8 +45,12 @@ public class ItemController {
     ItemService service;
 
     @GetMapping
-    public List<ItemResponseForOwner> getAllByUser(@RequestHeader(USER_HEADER) long userId) {
-        return service.getAllByUserId(userId);
+    public List<ItemResponseForOwner> getAllByUser(@RequestHeader(USER_HEADER) long userId,
+                                                   @PositiveOrZero @RequestParam(required = false, defaultValue = "0")
+                                                   int from,
+                                                   @Positive @RequestParam(required = false, defaultValue = "10")
+                                                       int size) {
+        return service.getAllByUserId(userId, from, size);
     }
 
     @GetMapping(ID_PATH)
@@ -55,9 +59,13 @@ public class ItemController {
     }
 
     @GetMapping(SEARCH_PATH)
-    public List<ItemResponseDto> getByQuery(@RequestParam @NotBlank @NotEmpty String text,
-                                            @RequestHeader(USER_HEADER) long userId) {
-        return service.getByNameOrDescription(text, userId);
+    public List<ItemResponseDto> getByQuery(@RequestParam String text,
+                                            @RequestHeader(USER_HEADER) long userId,
+                                            @PositiveOrZero @RequestParam(required = false, defaultValue = "0")
+                                                int from,
+                                            @Positive @RequestParam(required = false, defaultValue = "10")
+                                                int size) {
+        return service.getByNameOrDescription(text, userId, from, size);
     }
 
     @PostMapping

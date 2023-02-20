@@ -14,10 +14,12 @@ import ru.practicum.shareit.booking.exceptions.NotUpdatedStatusException;
 import ru.practicum.shareit.item.exceptions.IllegalUserException;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailableException;
 import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
+import ru.practicum.shareit.request.exceptions.ItemRequestNotFound;
 import ru.practicum.shareit.user.exceptions.ExistingEmailException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,6 +109,18 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNotUpdatedStatus(final NotUpdatedStatusException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleRequestNotFound(final ItemRequestNotFound e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalRequestParam(final ConstraintViolationException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

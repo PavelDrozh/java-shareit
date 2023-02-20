@@ -22,4 +22,5 @@ public class ItemCreateDto {
     String description;
     @NotNull(message = "Отсутствует статус вещи")
     Boolean available;
+    Long requestId;
 }
