@@ -53,7 +53,7 @@ public class BookingService {
         if (!item.getAvailable()) {
             throw new ItemNotAvailableException(String.format("Вещь (%s) недоступна", item.getName()));
         }
-        if (item.getOwner().getId().equals(booker.getId())) {
+        if (item.getOwner().equals(booker.getId())) {
             throw new ItemNotFoundException("Владелец не должен бронировать бронировать свою вещь");
         }
         Booking bookingForSave = mapper.creationBookingDtoToBooking(dto, item, booker);
@@ -77,7 +77,7 @@ public class BookingService {
     public BookingResponseDto approveBooking(Long userId, Long bookingId, Boolean isApproved) {
         Booking booking = getBooking(bookingId);
         Item item = itemService.getItem(booking.getItem().getId());
-        if (!item.getOwner().getId().equals(userId)) {
+        if (!item.getOwner().equals(userId)) {
             throw new IllegalUserException("Подтвердить бронированиие может только владелец вещи");
         }
         if (isApproved) {
@@ -107,7 +107,7 @@ public class BookingService {
     @Transactional(readOnly = true)
     public BookingResponseDto getBookingById(Long userId, Long bookingId) {
         Booking booking = getBooking(bookingId);
-        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
+        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().equals(userId)) {
             return mapper.bookingToBookingResponseDto(booking);
         } else {
             throw new UserNotFoundException("Просматривать бронирование могут владельцы вещи " +

@@ -114,7 +114,7 @@ public class ItemRequestServiceTest {
         Item item = new Item();
         item.setId(1L);
         item.setName("Item Name");
-        item.setOwner(user);
+        item.setOwner(1L);
         item.setDescription("Item Description");
         item.setAvailable(true);
         item.setRequest(itemRequest);
