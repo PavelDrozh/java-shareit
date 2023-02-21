@@ -6,8 +6,6 @@ import ru.practicum.shareit.item.dto.ItemResponseForOwner;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.List;
 
@@ -25,6 +23,4 @@ public interface ItemService {
     void deleteItem(long id, long userId);
 
     CommentResponseDto createComment(CommentCreateDto dto, long itemId, long userId);
-
-    List<Item> getItemsByRequest(ItemRequest requestId);
 }

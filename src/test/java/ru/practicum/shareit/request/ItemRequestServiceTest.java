@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.mapper.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.ItemRequestCreatorDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.exceptions.ItemRequestNotFound;
@@ -39,7 +38,7 @@ public class ItemRequestServiceTest {
     ItemRequestRepository repository;
     ItemMapper itemMapper;
     UserService userService;
-    ItemService itemService;
+
     User user;
     ItemRequestCreatorDto itemRequestCreatorDto;
     ItemRequest itemRequest;
@@ -47,11 +46,10 @@ public class ItemRequestServiceTest {
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
-        itemService = mock(ItemService.class);
         mapper = new ItemRequestMapperImpl();
         repository = mock(ItemRequestRepository.class);
         itemMapper = new ItemMapperImpl();
-        itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService, itemService);
+        itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService);
         user = new User();
         user.setId(1L);
         user.setName("User");
@@ -63,6 +61,7 @@ public class ItemRequestServiceTest {
         itemRequest.setCreated(LocalDateTime.of(2023, 2,19,14,37, 20));
         itemRequest.setDescription(itemRequestCreatorDto.getDescription());
         itemRequest.setId(1L);
+        itemRequest.setItems(new ArrayList<>());
     }
 
     @Test
@@ -120,6 +119,7 @@ public class ItemRequestServiceTest {
         item.setAvailable(true);
         item.setRequest(itemRequest);
         item.setComments(new ArrayList<>());
+        itemRequest.setItems(List.of(item));
         when(userService.getUser(any(Long.class)))
                 .thenReturn(user);
         when(repository.findById(any(Long.class)))
