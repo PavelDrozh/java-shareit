@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -30,21 +29,24 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                                             LocalDateTime end,
                                                                                             Pageable pageable);
 
-    Page<Booking> findAllByItem_OwnerAndStatusInOrderByStartDesc(User itemOwner, Collection<BookStatus> status,
+    Page<Booking> findAllByItem_OwnerAndStatusInOrderByStartDesc(Long itemOwner, Collection<BookStatus> status,
                                                                  Pageable pageable);
 
-    Page<Booking> findAllByItem_OwnerAndStatusInAndEndIsBeforeOrderByStartDesc(User itemOwner,
+    Page<Booking> findAllByItem_OwnerAndStatusInAndEndIsBeforeOrderByStartDesc(Long bookerId,
                                                                                Collection<BookStatus> status,
-                                                                               LocalDateTime end, Pageable pageable);
+                                                                               LocalDateTime end,
+                                                                               Pageable pageable);
 
-    Page<Booking> findAllByItem_OwnerAndStatusInAndStartIsAfterOrderByStartDesc(User itemOwner,
+    Page<Booking> findAllByItem_OwnerAndStatusInAndStartIsAfterOrderByStartDesc(Long bookerId,
                                                                                 Collection<BookStatus> status,
-                                                                                LocalDateTime start, Pageable pageable);
+                                                                                LocalDateTime start,
+                                                                                Pageable pageable);
 
-    Page<Booking> findAllByItem_OwnerAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(User itemOwner,
-                                                                                 Collection<BookStatus> status,
-                                                                                 LocalDateTime start, LocalDateTime end,
-                                                                                 Pageable pageable);
+    Page<Booking> findAllByItem_OwnerAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long bookerId,
+                                                                                         Collection<BookStatus> status,
+                                                                                              LocalDateTime start,
+                                                                                              LocalDateTime end,
+                                                                                              Pageable pageable);
 
     Booking findFirstByItemIdAndEndBeforeOrderByEndDesc(Long itemId, LocalDateTime end);
 

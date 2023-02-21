@@ -169,24 +169,24 @@ public class BookingService {
         List<Booking> bookings = new ArrayList<>();
         List<BookStatus> statuses = new ArrayList<>();
         Pageable pageable = PageRequest.of(from / size, size);
-        User user = userService.getUser(userId);
+        userService.getUser(userId);
         checkState(state);
         switch (State.valueOf(state)) {
             case ALL:
                 statuses = Arrays.stream(BookStatus.values()).collect(Collectors.toList());
-                bookings = bookingRepo.findAllByItem_OwnerAndStatusInOrderByStartDesc(user, statuses, pageable)
+                bookings = bookingRepo.findAllByItem_OwnerAndStatusInOrderByStartDesc(userId, statuses, pageable)
                         .getContent();
                 break;
             case PAST:
                 statuses.add(BookStatus.APPROVED);
-                bookings = bookingRepo.findAllByItem_OwnerAndStatusInAndEndIsBeforeOrderByStartDesc(user,
+                bookings = bookingRepo.findAllByItem_OwnerAndStatusInAndEndIsBeforeOrderByStartDesc(userId,
                         statuses, LocalDateTime.now(), pageable)
                         .getContent();
                 break;
             case FUTURE:
                 statuses.add(BookStatus.APPROVED);
                 statuses.add(BookStatus.WAITING);
-                bookings = bookingRepo.findAllByItem_OwnerAndStatusInAndStartIsAfterOrderByStartDesc(user,
+                bookings = bookingRepo.findAllByItem_OwnerAndStatusInAndStartIsAfterOrderByStartDesc(userId,
                         statuses, LocalDateTime.now(), pageable)
                         .getContent();
                 break;
@@ -194,17 +194,17 @@ public class BookingService {
                 statuses.add(BookStatus.APPROVED);
                 statuses.add(BookStatus.REJECTED);
                 bookings = bookingRepo.findAllByItem_OwnerAndStatusInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                user, statuses, LocalDateTime.now(), LocalDateTime.now(), pageable)
+                        userId, statuses, LocalDateTime.now(), LocalDateTime.now(), pageable)
                         .getContent();
                 break;
             case WAITING:
                 statuses.add(BookStatus.WAITING);
-                bookings = bookingRepo.findAllByItem_OwnerAndStatusInOrderByStartDesc(user, statuses, pageable)
+                bookings = bookingRepo.findAllByItem_OwnerAndStatusInOrderByStartDesc(userId, statuses, pageable)
                         .getContent();
                 break;
             case REJECTED:
                 statuses.add(BookStatus.REJECTED);
-                bookings = bookingRepo.findAllByItem_OwnerAndStatusInOrderByStartDesc(user, statuses, pageable)
+                bookings = bookingRepo.findAllByItem_OwnerAndStatusInOrderByStartDesc(userId, statuses, pageable)
                         .getContent();
                 break;
         }

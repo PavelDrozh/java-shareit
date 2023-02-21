@@ -84,8 +84,8 @@ public class ItemServiceTest {
 
     @Test
     void getAllByUserTest() {
-        when(userService.getUser(anyLong())).thenReturn(user);
-        when(repository.findAllByOwner(any(User.class), any(Pageable.class)))
+        when(userService.getById(anyLong())).thenReturn(null);
+        when(repository.findAllByOwner(anyLong(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(item)));
         when(commentsRepository.findAllByItem_Id(anyLong()))
                 .thenReturn(new ArrayList<>());
