@@ -21,6 +21,11 @@ CREATE TABLE IF NOT EXISTS items (
     request_id BIGINT REFERENCES requests (id)
 );
 
+CREATE TABLE IF NOT EXISTS items_requests (
+                                     item_id BIGINT PRIMARY KEY NOT NULL REFERENCES items (id),
+                                     request_id BIGINT REFERENCES requests (id)
+);
+
 CREATE TABLE IF NOT EXISTS booking (
    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
    item_id BIGINT NOT NULL REFERENCES items (id),
