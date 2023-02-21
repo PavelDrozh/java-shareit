@@ -25,6 +25,10 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    User owner;
+
     @Column(name = "name", nullable = false)
     String name;
 
@@ -33,10 +37,6 @@ public class Item {
 
     @Column(name = "available", nullable = false)
     Boolean available;
-
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    User owner;
 
     @OneToMany
     @JoinColumn(name = "comments")
