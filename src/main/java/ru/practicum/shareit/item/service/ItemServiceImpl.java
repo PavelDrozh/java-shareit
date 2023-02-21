@@ -55,9 +55,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemResponseForOwner> getAllByUserId(long userId, int from, int size) {
-        userService.getById(userId);
+        User user = userService.getUser(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
-        Page<Item> itemsPage = repository.findAllByOwner(userId, pageable);
+        Page<Item> itemsPage = repository.findAllByOwner(user, pageable);
         List<ItemResponseForOwner> items = itemsPage.getContent().stream()
                 .map(mapper::itemToItemResponseForOwner)
                 .collect(Collectors.toList());
