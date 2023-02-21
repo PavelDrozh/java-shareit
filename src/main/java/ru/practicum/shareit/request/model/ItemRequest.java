@@ -35,7 +35,7 @@ public class ItemRequest {
     @JoinColumn(name = "items_ids")
     List<Item> items;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "creator")
     User creator;
 }

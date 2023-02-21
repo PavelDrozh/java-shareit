@@ -38,9 +38,11 @@ public class Item {
 
     @OneToMany
     @JoinColumn(name = "comments")
+    @ToString.Exclude
     List<Comment> comments;
 
     @ManyToOne
     @JoinColumn(name = "request_id")
+    @ToString.Exclude
     ItemRequest request;
 }
