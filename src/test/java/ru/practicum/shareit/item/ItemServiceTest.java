@@ -48,6 +48,7 @@ public class ItemServiceTest {
 
     Item item;
     ItemCreateDto itemCreateDto;
+    User user;
 
     @BeforeEach
     void setUp() {
@@ -61,10 +62,14 @@ public class ItemServiceTest {
         bookingMapper = new BookingMapperImpl(new UserMapperImpl(), mapper);
         itemService = new ItemServiceImpl(userService, repository, mapper, commentsRepository, bookingRepository,
                 commentMapper, bookingMapper, itemRequestService);
+        user = new User();
+        user.setId(1L);
+        user.setName("User");
+        user.setEmail("email@yandex.ru");
         item = new Item();
         item.setId(1L);
         item.setName("Item Name");
-        item.setOwner(1L);
+        item.setOwner(user);
         item.setDescription("Item Description");
         item.setAvailable(true);
         item.setRequest(null);

@@ -64,7 +64,7 @@ public class ItemMapperImpl implements ItemMapper {
     public ItemResponseForItemRequest itemToResponseForItemRequest(Item item) {
         return ItemResponseForItemRequest.builder()
                 .id(item.getId())
-                .ownerId(item.getOwner())
+                .ownerId(item.getOwner().getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())

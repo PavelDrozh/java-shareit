@@ -96,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = getItem(itemId);
         ItemResponseForOwner response = mapper.itemToItemResponseForOwner(item);
         response.setComments(getComments(itemId));
-        if (item.getOwner() == userId) {
+        if (item.getOwner().getId() == userId) {
             response.setLastBooking(getLastBooking(itemId));
             response.setNextBooking(getNextBooking(itemId));
         }
@@ -124,9 +124,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemResponseDto createItem(ItemCreateDto dto, long userId) {
-        userService.getById(userId);
+        User user = userService.getUser(userId);
         Item item = mapper.itemCreateDtoToItem(dto);
-        item.setOwner(userId);
+        item.setOwner(user);
         ItemRequest request = null;
         Long requestId = dto.getRequestId();
         if (requestId != null) {
@@ -147,14 +147,14 @@ public class ItemServiceImpl implements ItemService {
         userService.getById(userId);
         Item item = getItem(itemId);
         Item updated;
-        if (userId == item.getOwner()) {
+        if (userId == item.getOwner().getId()) {
             updateItemFields(item, dto);
             item.setId(itemId);
             updated = repository.save(item);
         } else {
             throw new IllegalUserException(String
                     .format("Для обновления сведений о вещи (id = %d) нужно быть ее владельцем (id = %d)",
-                            item.getOwner(), userId));
+                            item.getOwner().getId(), userId));
         }
         return mapper.itemToItemResponseDto(updated);
     }
@@ -186,12 +186,12 @@ public class ItemServiceImpl implements ItemService {
     public void deleteItem(long id, long userId) {
         userService.getById(userId);
         Item item = getItem(id);
-        if (userId == item.getOwner()) {
+        if (userId == item.getOwner().getId()) {
             repository.deleteById(id);
         } else {
             throw new IllegalUserException(String
                     .format("Для удаления вещи (id = %d) нужно быть ее владельцем (id = %d)",
-                            item.getOwner(), userId));
+                            item.getOwner().getId(), userId));
         }
     }
 

@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,8 +25,9 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "owner", nullable = false)
-    Long owner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    User owner;
 
     @Column(name = "name", nullable = false)
     String name;
