@@ -134,10 +134,6 @@ public class ItemServiceImpl implements ItemService {
         }
         item.setRequest(request);
         Item created = repository.save(item);
-        if (request != null) {
-            request.getItems().add(created);
-            itemRequestService.save(request);
-        }
         return mapper.itemToItemResponseDto(created);
     }
 
@@ -208,5 +204,11 @@ public class ItemServiceImpl implements ItemService {
         Comment comment = commentMapper.commentCreateDtoToComment(dto, author, item, LocalDateTime.now());
         Comment created = commentsRepository.save(comment);
         return commentMapper.commentToCommentResponse(created);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Item> getItemsByRequest(ItemRequest requestId) {
+        return repository.findAllByRequest(requestId);
     }
 }
