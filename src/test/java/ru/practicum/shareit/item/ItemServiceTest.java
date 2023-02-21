@@ -62,10 +62,12 @@ public class ItemServiceTest {
         bookingMapper = new BookingMapperImpl(new UserMapperImpl(), mapper);
         itemService = new ItemServiceImpl(userService, repository, mapper, commentsRepository, bookingRepository,
                 commentMapper, bookingMapper, itemRequestService);
+
         user = new User();
         user.setId(1L);
         user.setName("User");
         user.setEmail("email@yandex.ru");
+
         item = new Item();
         item.setId(1L);
         item.setName("Item Name");
@@ -74,6 +76,7 @@ public class ItemServiceTest {
         item.setAvailable(true);
         item.setRequest(null);
         item.setComments(new ArrayList<>());
+
         itemCreateDto = ItemCreateDto.builder()
                 .name(item.getName())
                 .description(item.getDescription())
