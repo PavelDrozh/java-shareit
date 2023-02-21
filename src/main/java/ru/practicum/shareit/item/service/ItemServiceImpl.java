@@ -205,4 +205,10 @@ public class ItemServiceImpl implements ItemService {
         Comment created = commentsRepository.save(comment);
         return commentMapper.commentToCommentResponse(created);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Item> getItemsByRequest(ItemRequest requestId) {
+        return repository.findAllByRequest(requestId);
+    }
 }
