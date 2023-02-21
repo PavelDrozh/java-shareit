@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.mapper.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestCreatorDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.exceptions.ItemRequestNotFound;
@@ -39,7 +39,7 @@ public class ItemRequestServiceTest {
     ItemRequestRepository repository;
     ItemMapper itemMapper;
     UserService userService;
-    ItemService itemService;
+    ItemRepository itemRepository;
     User user;
     ItemRequestCreatorDto itemRequestCreatorDto;
     ItemRequest itemRequest;
@@ -47,11 +47,11 @@ public class ItemRequestServiceTest {
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
-        itemService = mock(ItemService.class);
+        itemRepository = mock(ItemRepository.class);
         mapper = new ItemRequestMapperImpl();
         repository = mock(ItemRequestRepository.class);
         itemMapper = new ItemMapperImpl();
-        itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService, itemService);
+        itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService, itemRepository);
         user = new User();
         user.setId(1L);
         user.setName("User");
