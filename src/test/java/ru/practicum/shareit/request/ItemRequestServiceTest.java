@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.mapper.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestCreatorDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.exceptions.ItemRequestNotFound;
@@ -43,13 +44,16 @@ public class ItemRequestServiceTest {
     ItemRequestCreatorDto itemRequestCreatorDto;
     ItemRequest itemRequest;
 
+    ItemRepository itemRepository;
+
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
         mapper = new ItemRequestMapperImpl();
         repository = mock(ItemRequestRepository.class);
         itemMapper = new ItemMapperImpl();
-        itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService);
+        itemRepository = mock(ItemRepository.class);
+        itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService, itemRepository);
         user = new User();
         user.setId(1L);
         user.setName("User");
@@ -61,7 +65,6 @@ public class ItemRequestServiceTest {
         itemRequest.setCreated(LocalDateTime.of(2023, 2,19,14,37, 20));
         itemRequest.setDescription(itemRequestCreatorDto.getDescription());
         itemRequest.setId(1L);
-        itemRequest.setItems(new ArrayList<>());
     }
 
     @Test
@@ -119,17 +122,19 @@ public class ItemRequestServiceTest {
         item.setAvailable(true);
         item.setRequest(itemRequest);
         item.setComments(new ArrayList<>());
-        itemRequest.setItems(List.of(item));
         when(userService.getUser(any(Long.class)))
                 .thenReturn(user);
         when(repository.findById(any(Long.class)))
                 .thenReturn(Optional.ofNullable(itemRequest));
+        when(itemRepository.findAllByRequest(any(ItemRequest.class)))
+                .thenReturn(List.of(item));
         ItemRequestResponseDto result = itemRequestService.getById(1,1L);
 
         assertNotNull(result);
         assertEquals(result.getCreated(), itemRequest.getCreated());
         assertEquals(result.getId(), itemRequest.getId());
         assertEquals(result.getDescription(), itemRequest.getDescription());
+        assertEquals(result.getItems().get(0).getId(), item.getId());
     }
 
     @Test

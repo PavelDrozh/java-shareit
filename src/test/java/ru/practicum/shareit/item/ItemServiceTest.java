@@ -161,7 +161,6 @@ public class ItemServiceTest {
     void createItemTest() {
         ItemRequest request = new ItemRequest();
         request.setId(1L);
-        request.setItems(new ArrayList<>());
         item.setRequest(request);
         when(userService.getById(anyLong())).thenReturn(null);
         when(repository.save(any(Item.class)))

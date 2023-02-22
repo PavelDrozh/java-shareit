@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemResponseForItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestCreatorDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.exceptions.ItemRequestNotFound;
@@ -36,6 +37,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     ItemRequestRepository repository;
     ItemMapper itemMapper;
     UserService userService;
+
+    ItemRepository itemRepository;
 
     @Override
     @Transactional
@@ -70,7 +73,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(mapper::toItemRequestResponse)
                 .collect(Collectors.toList());
         List<List<Item>> items = itemRequestList.stream()
-                .map(ItemRequest::getItems)
+                .map(itemRepository::findAllByRequest)
                 .collect(Collectors.toList());
         for (int i = 0; i < responseDtos.size(); i++) {
             List<ItemResponseForItemRequest> itemResp = items.get(i).stream()
@@ -87,7 +90,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userService.getUser(userId);
         ItemRequest result = getRequestById(requestId);
         ItemRequestResponseDto responseDto = mapper.toItemRequestResponse(result);
-        List<ItemResponseForItemRequest> items = result.getItems().stream()
+        List<ItemResponseForItemRequest> items = itemRepository.findAllByRequest(result).stream()
                 .map(itemMapper::itemToResponseForItemRequest)
                 .collect(Collectors.toList());
         responseDto.setItems(items);

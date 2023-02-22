@@ -134,10 +134,6 @@ public class ItemServiceImpl implements ItemService {
         }
         item.setRequest(request);
         Item created = repository.save(item);
-        if (request != null) {
-            request.getItems().add(created);
-            itemRequestService.save(request);
-        }
         return mapper.itemToItemResponseDto(created);
     }
 
