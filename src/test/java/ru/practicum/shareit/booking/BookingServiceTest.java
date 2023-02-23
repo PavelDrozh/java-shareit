@@ -27,6 +27,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -383,19 +384,27 @@ public class BookingServiceTest {
         creationDto.setEnd(LocalDateTime.now().minusDays(1));
         assertThatThrownBy(() -> bookingService.createBooking(user.getId(), creationDto))
                 .isInstanceOf(IncorrectDateTimeException.class)
-                .message().isEqualTo("Дата окончания бронирования не может быть раньше текущего времени");
+                .message().isEqualTo(String.format("Дата окончания бронирования (%s)" +
+                        "не может быть раньше текущего времени (%s)",
+                        creationDto.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
 
         creationDto.setStart(LocalDateTime.now().minusDays(1));
         assertThatThrownBy(() -> bookingService.createBooking(user.getId(), creationDto))
                 .isInstanceOf(IncorrectDateTimeException.class)
-                .message().isEqualTo("Дата начала бронирования не может быть раньше текущего времени");
+                .message().isEqualTo(String.format("Дата начала бронирования (%s) " +
+                        "не может быть раньше текущего времени (%s)",
+                        creationDto.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
 
         creationDto.setStart(LocalDateTime.now().plusDays(2));
         creationDto.setEnd(LocalDateTime.now().plusDays(1));
         assertThatThrownBy(() -> bookingService.createBooking(user.getId(), creationDto))
                 .isInstanceOf(IncorrectDateTimeException.class)
-                .message().isEqualTo("Дата окончания бронирования не может быть раньше " +
-                        "времени начала бронирования");
+                .message().isEqualTo(String.format("Дата окончания бронирования (%s) не может быть " +
+                        "раньше времени начала бронирования (%s)",
+                        creationDto.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                        creationDto.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
     }
 
     @Test

@@ -29,6 +29,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,12 +65,20 @@ public class BookingService {
 
     private void checkDates(Booking bookingForSave) {
         if (bookingForSave.getStart().isBefore(LocalDateTime.now())) {
-            throw new IncorrectDateTimeException("Дата начала бронирования не может быть раньше текущего времени");
+            throw new IncorrectDateTimeException(String.format("Дата начала бронирования (%s) " +
+                    "не может быть раньше текущего времени (%s)",
+                    bookingForSave.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
         } else if (bookingForSave.getEnd().isBefore(LocalDateTime.now())) {
-            throw new IncorrectDateTimeException("Дата окончания бронирования не может быть раньше текущего времени");
+            throw new IncorrectDateTimeException(String.format("Дата окончания бронирования (%s)" +
+                    "не может быть раньше текущего времени (%s)",
+                    bookingForSave.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
         } else if (bookingForSave.getEnd().isBefore(bookingForSave.getStart())) {
-            throw new IncorrectDateTimeException("Дата окончания бронирования не может быть раньше " +
-                    "времени начала бронирования");
+            throw new IncorrectDateTimeException(String.format("Дата окончания бронирования (%s) не может быть " +
+                    "раньше времени начала бронирования (%s)",
+                    bookingForSave.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                    bookingForSave.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
         }
     }
 
