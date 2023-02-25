@@ -4,14 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserCreatorDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -19,6 +13,8 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -29,6 +25,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Validated
 public class UserController {
 
     private static final String ID_PATH = "/{id}";
@@ -36,8 +33,9 @@ public class UserController {
     UserService service;
 
     @GetMapping
-    public List<UserResponseDto> findAll() {
-        return service.getAll();
+    public List<UserResponseDto> findAll(@PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                         @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+        return service.getAll(from, size);
     }
 
     @PostMapping

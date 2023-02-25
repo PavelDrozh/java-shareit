@@ -27,11 +27,16 @@ public class ItemMapperImpl implements ItemMapper {
 
     @Override
     public ItemResponseDto itemToItemResponseDto(Item item) {
+        Long requestId = null;
+        if (item.getRequest() != null) {
+            requestId = item.getRequest().getId();
+        }
         return ItemResponseDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(requestId)
                 .build();
     }
 
@@ -52,6 +57,18 @@ public class ItemMapperImpl implements ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .build();
+    }
+
+    @Override
+    public ItemResponseForItemRequest itemToResponseForItemRequest(Item item) {
+        return ItemResponseForItemRequest.builder()
+                .id(item.getId())
+                .ownerId(item.getOwner())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequest().getId())
                 .build();
     }
 

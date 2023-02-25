@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -26,6 +29,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Validated
 public class BookingController {
 
     private static final String USER_HEADER = "X-Sharer-User-Id";
@@ -52,13 +56,17 @@ public class BookingController {
 
     @GetMapping
     List<BookingResponseDto> getUserBookings(@RequestHeader(USER_HEADER) Long userId,
-                                             @RequestParam (defaultValue = "ALL") String state) {
-        return service.getBookingsByUser(userId, state);
+                                             @RequestParam (defaultValue = "ALL") String state,
+                                             @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                             @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+        return service.getBookingsByUser(userId, state, from, size);
     }
 
     @GetMapping(OWNER_PATH)
     List<BookingResponseDto> getOwnerBookings(@RequestHeader(USER_HEADER) Long userId,
-                                              @RequestParam (defaultValue = "ALL") String state) {
-        return service.getBookingsByOwner(userId, state);
+                                              @RequestParam (defaultValue = "ALL") String state,
+                                              @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                              @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+        return service.getBookingsByOwner(userId, state, from, size);
     }
 }

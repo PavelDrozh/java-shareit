@@ -14,4 +14,6 @@ public interface ItemMapper {
 
     ItemInfoInBooking itemToItemInfo(Item item);
 
+    ItemResponseForItemRequest itemToResponseForItemRequest(Item item);
+
 }

@@ -5,16 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class ItemResponseDto {
+public class ItemResponseForItemRequest {
     Long id;
+    Long ownerId;
+    Long requestId;
     String name;
     String description;
-    Boolean available;
-    List<CommentResponseDto> comments;
-    Long requestId;
+    boolean available;
 }
