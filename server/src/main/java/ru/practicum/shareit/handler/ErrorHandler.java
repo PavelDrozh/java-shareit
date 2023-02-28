@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.exceptions.BookingNotFoundException;
-import ru.practicum.shareit.booking.exceptions.IncorrectDateTimeException;
-import ru.practicum.shareit.booking.exceptions.IncorrectStateException;
 import ru.practicum.shareit.booking.exceptions.NotUpdatedStatusException;
 import ru.practicum.shareit.item.exceptions.IllegalUserException;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailableException;
@@ -19,7 +17,6 @@ import ru.practicum.shareit.user.exceptions.ExistingEmailException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,18 +86,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectDateTime(final IncorrectDateTimeException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectState(final IncorrectStateException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleBookingNotFound(final BookingNotFoundException e) {
         return new ErrorResponse(e.getMessage());
@@ -115,12 +100,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleRequestNotFound(final ItemRequestNotFound e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalRequestParam(final ConstraintViolationException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
