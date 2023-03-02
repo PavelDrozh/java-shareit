@@ -158,7 +158,7 @@ public class ItemControllerTest {
 
     @Test
     void deleteById() throws Exception {
-        mvc.perform(delete(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(delete(SOURCE_PATH + ID_PATH, 1)
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
