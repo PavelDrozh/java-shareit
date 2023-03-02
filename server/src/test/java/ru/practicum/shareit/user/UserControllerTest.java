@@ -31,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
 public class UserControllerTest {
+    private static final  String SOURCE_PATH = "/users";
+    private static final  String ID_PATH = "/{userId}";
+    public static final String PAGINATION_PARAMS = "from=0&size=10";
     @MockBean
     private UserService userService;
 
@@ -59,7 +62,7 @@ public class UserControllerTest {
         when(userService.createUser(any()))
                 .thenReturn(userDto);
 
-        mvc.perform(post("/users")
+        mvc.perform(post(SOURCE_PATH)
                         .content(mapper.writeValueAsString(userCreatorDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +78,7 @@ public class UserControllerTest {
         when(userService.getAll(0, 10))
                 .thenReturn(List.of(userDto));
 
-        mvc.perform(get("/users?from=0&size=10"))
+        mvc.perform(get(SOURCE_PATH + "?" + PAGINATION_PARAMS))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(userDto.getId()), Long.class))
@@ -88,7 +91,7 @@ public class UserControllerTest {
         when(userService.updateUser(any(UserUpdateDto.class), any(Long.class)))
                 .thenReturn(updatedUserDto);
 
-        mvc.perform(patch("/users/1")
+        mvc.perform(patch(SOURCE_PATH + ID_PATH , 1)
                         .content(mapper.writeValueAsString(dtoForUpdating))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +107,7 @@ public class UserControllerTest {
         when(userService.getById(any(Long.class)))
                 .thenReturn(userDto);
 
-        mvc.perform(get("/users/1"))
+        mvc.perform(get(SOURCE_PATH + ID_PATH , 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
@@ -114,7 +117,7 @@ public class UserControllerTest {
     @Test
     void deleteById() throws Exception {
         doNothing().when(userService).deleteUser(any(Long.class));
-        mvc.perform(delete("/users/1"))
+        mvc.perform(delete(SOURCE_PATH + ID_PATH , 1))
                 .andExpect(status().isOk());
         verify(userService, times(1)).deleteUser(any(Long.class));
     }
@@ -124,7 +127,7 @@ public class UserControllerTest {
         when(userService.getById(any(Long.class)))
                 .thenThrow(UserNotFoundException.class);
 
-        mvc.perform(get("/users/100")
+        mvc.perform(get(SOURCE_PATH + ID_PATH , 100)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -136,7 +139,7 @@ public class UserControllerTest {
         when(userService.createUser(any(UserCreatorDto.class)))
                 .thenThrow(ExistingEmailException.class);
 
-        mvc.perform(post("/users")
+        mvc.perform(post(SOURCE_PATH)
                         .content(mapper.writeValueAsString(userCreatorDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

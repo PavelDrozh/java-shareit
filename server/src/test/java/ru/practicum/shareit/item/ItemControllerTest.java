@@ -31,6 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class ItemControllerTest {
 
+    private static final  String SOURCE_PATH = "/items";
+    private static final String USER_HEADER = "X-Sharer-User-Id";
+    private static final  String ID_PATH = "/{itemId}";
+    public static final String COMMENT = "/comment";
+    public static final String PAGINATION_PARAMS = "from=0&size=10";
+
     @MockBean
     ItemService service;
 
@@ -64,9 +70,9 @@ public class ItemControllerTest {
         when(service.createItem(any(ItemCreateDto.class), any(Long.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/items")
+        mvc.perform(post(SOURCE_PATH)
                         .content(mapper.writeValueAsString(createDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -82,8 +88,8 @@ public class ItemControllerTest {
         when(service.getAllByUserId(any(Long.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(List.of(responseForOwner));
 
-        mvc.perform(get("/items?from=0&size=10")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + "?" + PAGINATION_PARAMS)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -101,8 +107,8 @@ public class ItemControllerTest {
         when(service.getById(any(Long.class), any(Long.class)))
                 .thenReturn(responseForOwner);
 
-        mvc.perform(get("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH , 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -119,8 +125,8 @@ public class ItemControllerTest {
         when(service.getByNameOrDescription(any(String.class), any(Long.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(List.of(responseDto));
 
-        mvc.perform(get("/items/search?text=item&from=0&size=10")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + "/search?text=item&" + PAGINATION_PARAMS)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -137,9 +143,9 @@ public class ItemControllerTest {
         when(service.updateItem(any(ItemUpdateDto.class), any(Long.class), any(Long.class)))
                 .thenReturn(updatedResponseDto);
 
-        mvc.perform(patch("/items/1")
+        mvc.perform(patch(SOURCE_PATH + ID_PATH , 1)
                         .content(mapper.writeValueAsString(updateDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -152,8 +158,8 @@ public class ItemControllerTest {
 
     @Test
     void deleteById() throws Exception {
-        mvc.perform(delete("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(delete(SOURCE_PATH + ID_PATH , 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -165,9 +171,9 @@ public class ItemControllerTest {
         when(service.createComment(any(CommentCreateDto.class), any(Long.class), any(Long.class)))
                 .thenReturn(commentResponseDto);
 
-        mvc.perform(post("/items/1/comment")
+        mvc.perform(post(SOURCE_PATH + ID_PATH + COMMENT, 1)
                         .content(mapper.writeValueAsString(commentCreateDto))
-                        .header("X-Sharer-User-Id", 2)
+                        .header(USER_HEADER, 2)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -183,9 +189,9 @@ public class ItemControllerTest {
         when(service.updateItem(any(ItemUpdateDto.class), anyLong(), anyLong()))
                 .thenThrow(IllegalUserException.class);
 
-        mvc.perform(patch("/items/1")
+        mvc.perform(patch(SOURCE_PATH + ID_PATH , 1)
                         .content(mapper.writeValueAsString(updateDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -197,8 +203,8 @@ public class ItemControllerTest {
         when(service.getById(anyLong(), anyLong()))
                 .thenThrow(ItemNotFoundException.class);
 
-        mvc.perform(get("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH , 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -210,9 +216,9 @@ public class ItemControllerTest {
         when(service.createComment(any(CommentCreateDto.class), anyLong(), anyLong()))
                 .thenThrow(ItemNotAvailableException.class);
 
-        mvc.perform(post("/items/1/comment")
+        mvc.perform(post(SOURCE_PATH + ID_PATH + COMMENT, 1)
                         .content(mapper.writeValueAsString(commentCreateDto))
-                        .header("X-Sharer-User-Id", 2)
+                        .header(USER_HEADER, 2)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

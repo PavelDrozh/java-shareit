@@ -31,6 +31,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class ItemRequestControllerTest {
 
+    private static final  String SOURCE_PATH = "/requests";
+    private static final String USER_HEADER = "X-Sharer-User-Id";
+    private static final  String ID_PATH = "/{requestId}";
+    public static final String PAGINATION_PARAMS = "from=0&size=10";
+
     @MockBean
     private ItemRequestService itemRequestService;
 
@@ -55,9 +60,9 @@ public class ItemRequestControllerTest {
         when(itemRequestService.create(any(ItemRequestCreatorDto.class), any(Long.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/requests")
+        mvc.perform(post(SOURCE_PATH)
                         .content(mapper.writeValueAsString(createDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -72,8 +77,8 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getByUser(any(Long.class)))
                 .thenReturn(List.of(responseDto));
 
-        mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -89,8 +94,8 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getAll(any(Long.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(List.of(responseDto));
 
-        mvc.perform(get("/requests/all?from=0&size=10")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + "/all?" + PAGINATION_PARAMS)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -106,8 +111,8 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getById(any(Long.class), any(Long.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(get("/requests/1")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH , 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -122,8 +127,8 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getByUser(any(Long.class)))
                 .thenThrow(ItemRequestNotFound.class);
 
-        mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

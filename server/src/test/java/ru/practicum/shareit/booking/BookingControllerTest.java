@@ -34,7 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class BookingControllerTest {
 
-
+    private static final  String SOURCE_PATH = "/bookings";
+    private static final String USER_HEADER = "X-Sharer-User-Id";
+    private static final  String ID_PATH = "/{bookingId}";
+    private static final  String OWNER_PATH = "/owner";
+    private static final String APPROVED_TRUE = "?approved=true";
     @MockBean
     BookingService service;
 
@@ -62,9 +66,9 @@ public class BookingControllerTest {
         when(service.createBooking(any(Long.class), any(BookingCreationDto.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/bookings")
+        mvc.perform(post(SOURCE_PATH)
                         .content(mapper.writeValueAsString(creationDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -85,8 +89,8 @@ public class BookingControllerTest {
         when(service.approveBooking(any(Long.class), any(Long.class), any(Boolean.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(patch("/bookings/{bookingId}?approved=true", 1)
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(patch(SOURCE_PATH + ID_PATH + APPROVED_TRUE, 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -106,8 +110,8 @@ public class BookingControllerTest {
         when(service.getBookingById(any(Long.class), any(Long.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(get("/bookings/{bookingId}", 1)
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -127,8 +131,8 @@ public class BookingControllerTest {
         when(service.getBookingsByOwner(any(Long.class), any(String.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(List.of(responseDto));
 
-        mvc.perform(get("/bookings/owner?state=ALL&from=0&size=10")
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + OWNER_PATH + "?state=ALL&from=0&size=10")
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -146,7 +150,7 @@ public class BookingControllerTest {
 
     @Test
     void getMissingRequestHeaderExceptionTest() throws Exception {
-        mvc.perform(get("/bookings/owner")
+        mvc.perform(get(SOURCE_PATH + OWNER_PATH)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -158,8 +162,8 @@ public class BookingControllerTest {
         when(service.getBookingById(any(Long.class), any(Long.class)))
                 .thenThrow(BookingNotFoundException.class);
 
-        mvc.perform(get("/bookings/{bookingId}", 10)
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 10)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -171,8 +175,8 @@ public class BookingControllerTest {
         when(service.approveBooking(any(Long.class), any(Long.class), any(Boolean.class)))
                 .thenThrow(NotUpdatedStatusException.class);
 
-        mvc.perform(patch("/bookings/{bookingId}?approved=true", 1)
-                        .header("X-Sharer-User-Id", 1)
+        mvc.perform(patch(SOURCE_PATH+ ID_PATH + APPROVED_TRUE, 1)
+                        .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
