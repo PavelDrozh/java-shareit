@@ -91,7 +91,7 @@ public class UserControllerTest {
         when(userService.updateUser(any(UserUpdateDto.class), any(Long.class)))
                 .thenReturn(updatedUserDto);
 
-        mvc.perform(patch(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(patch(SOURCE_PATH + ID_PATH, 1)
                         .content(mapper.writeValueAsString(dtoForUpdating))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +107,7 @@ public class UserControllerTest {
         when(userService.getById(any(Long.class)))
                 .thenReturn(userDto);
 
-        mvc.perform(get(SOURCE_PATH + ID_PATH , 1))
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
@@ -117,7 +117,7 @@ public class UserControllerTest {
     @Test
     void deleteById() throws Exception {
         doNothing().when(userService).deleteUser(any(Long.class));
-        mvc.perform(delete(SOURCE_PATH + ID_PATH , 1))
+        mvc.perform(delete(SOURCE_PATH + ID_PATH, 1))
                 .andExpect(status().isOk());
         verify(userService, times(1)).deleteUser(any(Long.class));
     }
@@ -127,7 +127,7 @@ public class UserControllerTest {
         when(userService.getById(any(Long.class)))
                 .thenThrow(UserNotFoundException.class);
 
-        mvc.perform(get(SOURCE_PATH + ID_PATH , 100)
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 100)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

@@ -107,7 +107,7 @@ public class ItemControllerTest {
         when(service.getById(any(Long.class), any(Long.class)))
                 .thenReturn(responseForOwner);
 
-        mvc.perform(get(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 1)
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +143,7 @@ public class ItemControllerTest {
         when(service.updateItem(any(ItemUpdateDto.class), any(Long.class), any(Long.class)))
                 .thenReturn(updatedResponseDto);
 
-        mvc.perform(patch(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(patch(SOURCE_PATH + ID_PATH, 1)
                         .content(mapper.writeValueAsString(updateDto))
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -189,7 +189,7 @@ public class ItemControllerTest {
         when(service.updateItem(any(ItemUpdateDto.class), anyLong(), anyLong()))
                 .thenThrow(IllegalUserException.class);
 
-        mvc.perform(patch(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(patch(SOURCE_PATH + ID_PATH, 1)
                         .content(mapper.writeValueAsString(updateDto))
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -203,7 +203,7 @@ public class ItemControllerTest {
         when(service.getById(anyLong(), anyLong()))
                 .thenThrow(ItemNotFoundException.class);
 
-        mvc.perform(get(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 1)
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

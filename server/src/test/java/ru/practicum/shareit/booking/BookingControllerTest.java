@@ -175,7 +175,7 @@ public class BookingControllerTest {
         when(service.approveBooking(any(Long.class), any(Long.class), any(Boolean.class)))
                 .thenThrow(NotUpdatedStatusException.class);
 
-        mvc.perform(patch(SOURCE_PATH+ ID_PATH + APPROVED_TRUE, 1)
+        mvc.perform(patch(SOURCE_PATH + ID_PATH + APPROVED_TRUE, 1)
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

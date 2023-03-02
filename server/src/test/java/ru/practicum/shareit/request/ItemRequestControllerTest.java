@@ -111,7 +111,7 @@ public class ItemRequestControllerTest {
         when(itemRequestService.getById(any(Long.class), any(Long.class)))
                 .thenReturn(responseDto);
 
-        mvc.perform(get(SOURCE_PATH + ID_PATH , 1)
+        mvc.perform(get(SOURCE_PATH + ID_PATH, 1)
                         .header(USER_HEADER, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
