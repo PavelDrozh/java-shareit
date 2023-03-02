@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.mapper.BookingMapperImpl;
-import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.*;
@@ -22,6 +21,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 import ru.practicum.shareit.user.mapper.UserMapperImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -45,7 +45,6 @@ public class ItemServiceTest {
     CommentMapper commentMapper;
     BookingMapper bookingMapper;
     ItemRequestService itemRequestService;
-
     Item item;
     ItemCreateDto itemCreateDto;
 
@@ -61,20 +60,8 @@ public class ItemServiceTest {
         bookingMapper = new BookingMapperImpl(new UserMapperImpl(), mapper);
         itemService = new ItemServiceImpl(userService, repository, mapper, commentsRepository, bookingRepository,
                 commentMapper, bookingMapper, itemRequestService);
-        item = new Item();
-        item.setId(1L);
-        item.setName("Item Name");
-        item.setOwner(1L);
-        item.setDescription("Item Description");
-        item.setAvailable(true);
-        item.setRequest(null);
-        item.setComments(new ArrayList<>());
-        itemCreateDto = ItemCreateDto.builder()
-                .name(item.getName())
-                .description(item.getDescription())
-                .requestId(1L)
-                .available(item.getAvailable())
-                .build();
+        item = ObjectSupplier.getDefaultItem();
+        itemCreateDto = ObjectSupplier.getDefaultItemCreateDto();
     }
 
     @Test
@@ -109,16 +96,9 @@ public class ItemServiceTest {
                 .thenReturn(item);
         when(commentsRepository.findAllByItem_Id(anyLong()))
                 .thenReturn(new ArrayList<>());
-        User user = new User();
-        user.setId(1L);
-        user.setName("name");
-        user.setEmail("name@yandex.ru");
-        Booking booking = new Booking();
-        booking.setItem(item);
-        booking.setBooker(user);
+        Booking booking = ObjectSupplier.getDefaultBooking();
         booking.setStart(LocalDateTime.now().minusDays(10));
         booking.setEnd(LocalDateTime.now().minusDays(9));
-        booking.setId(1L);
         when(bookingRepository.findFirstByItemIdAndEndBeforeOrderByEndDesc(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(booking);
         when(bookingRepository.findFirstByItemIdAndStartAfterOrderByStart(anyLong(), any(LocalDateTime.class)))
@@ -159,8 +139,7 @@ public class ItemServiceTest {
 
     @Test
     void createItemTest() {
-        ItemRequest request = new ItemRequest();
-        request.setId(1L);
+        ItemRequest request = ObjectSupplier.getDefaultItemRequest();
         item.setRequest(request);
         when(userService.getById(anyLong())).thenReturn(null);
         when(repository.save(any(Item.class)))
@@ -179,11 +158,7 @@ public class ItemServiceTest {
 
     @Test
     void updateItemTest() {
-        ItemUpdateDto updateDto = ItemUpdateDto.builder()
-                .name("Updated Name")
-                .description("Updated Description")
-                .available(false)
-                .build();
+        ItemUpdateDto updateDto = ObjectSupplier.getDefaultItemUpdateDto();
         when(userService.getById(anyLong())).thenReturn(null);
         when(repository.getById(anyLong()))
                 .thenReturn(item);
@@ -220,25 +195,10 @@ public class ItemServiceTest {
 
     @Test
     void createCommentTest() {
-        User user = new User();
-        user.setId(1L);
-        user.setName("User");
-        user.setEmail("email@yandex.ru");
-        Booking booking = new Booking();
-        booking.setStatus(BookStatus.APPROVED);
-        booking.setItem(item);
-        booking.setBooker(user);
-        booking.setStart(LocalDateTime.of(2023, 1,19,14,37, 20));
-        booking.setEnd(LocalDateTime.of(2023, 1,20,14,37, 20));
-        booking.setId(1L);
-        Comment comment = new Comment();
-        comment.setCreated(LocalDateTime.of(2023, 2,12,14,37, 20));
-        comment.setText("comment");
-        comment.setItem(item);
-        comment.setAuthor(user);
-        comment.setId(1L);
-        CommentCreateDto commentCreateDto = new CommentCreateDto();
-        commentCreateDto.setText(comment.getText());
+        User user = ObjectSupplier.getDefaultUser();
+        Booking booking = ObjectSupplier.getDefaultBooking();
+        Comment comment = ObjectSupplier.getDefaultComment();
+        CommentCreateDto commentCreateDto = ObjectSupplier.getCommentCreateDto();
         when(userService.getUser(anyLong())).thenReturn(user);
         when(repository.getById(anyLong()))
                 .thenReturn(item);

@@ -19,13 +19,12 @@ import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapperImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +43,7 @@ public class BookingServiceTest {
     ItemServiceImpl itemService;
     UserService userService;
     BookingMapper mapper;
-    BookingCreationDto creationDto;
-
+    BookingCreationDto bookingCreationDto;
     User user;
     Item item;
     Booking booking;
@@ -57,40 +55,23 @@ public class BookingServiceTest {
         userService = mock(UserService.class);
         mapper = new BookingMapperImpl(new UserMapperImpl(), new ItemMapperImpl());
         bookingService = new BookingService(bookingRepo, itemService, userService, mapper);
-        creationDto = new BookingCreationDto();
-        creationDto.setItemId(1L);
-        creationDto.setStart(LocalDateTime.of(2023, 3,19,14,37, 20));
-        creationDto.setEnd(LocalDateTime.of(2023, 3,20,14,37, 20));
-        user = new User();
-        user.setId(1L);
-        user.setName("User");
-        user.setEmail("email@yandex.ru");
-        item = new Item();
-        item.setId(1L);
-        item.setAvailable(true);
-        item.setOwner(2L);
-        item.setName("Item Name");
-        item.setDescription("Item Description");
-        item.setRequest(null);
-        item.setComments(new ArrayList<>());
-        booking = new Booking();
-        booking.setId(1L);
-        booking.setItem(item);
-        booking.setStatus(BookStatus.WAITING);
-        booking.setBooker(user);
-        booking.setStart(creationDto.getStart());
-        booking.setEnd(creationDto.getEnd());
+        bookingCreationDto = ObjectSupplier.getDefaultBookingCreateDto();
+        user = ObjectSupplier.getDefaultUser();
+        item = ObjectSupplier.getDefaultItem();
+        booking = ObjectSupplier.getDefaultBooking();
     }
 
     @Test
     void createBookingTest() {
+        User userLocal = ObjectSupplier.getDefaultUser();
+        userLocal.setId(2L);
         when(userService.getUser(anyLong()))
-                .thenReturn(user);
+                .thenReturn(userLocal);
         when(itemService.getItem(anyLong()))
                 .thenReturn(item);
         when(bookingRepo.save(any(Booking.class)))
                 .thenReturn(booking);
-        BookingResponseDto result = bookingService.createBooking(user.getId(), creationDto);
+        BookingResponseDto result = bookingService.createBooking(userLocal.getId(), bookingCreationDto);
 
         checkResult(result);
         assertEquals(result.getStatus(), BookStatus.WAITING);
@@ -101,8 +82,8 @@ public class BookingServiceTest {
         assertEquals(result.getId(), booking.getId());
         assertEquals(result.getBooker().getId(), user.getId());
         assertEquals(result.getItem().getId(), item.getId());
-        assertEquals(result.getEnd(), creationDto.getEnd());
-        assertEquals(result.getStart(), creationDto.getStart());
+        assertEquals(result.getEnd(), bookingCreationDto.getEnd());
+        assertEquals(result.getStart(), bookingCreationDto.getStart());
     }
 
     @Test
@@ -111,13 +92,8 @@ public class BookingServiceTest {
                 .thenReturn(item);
         when(bookingRepo.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(booking));
-        Booking savedBooking = new Booking();
+        Booking savedBooking = ObjectSupplier.getDefaultBooking();
         savedBooking.setStatus(BookStatus.APPROVED);
-        savedBooking.setId(1L);
-        savedBooking.setItem(item);
-        savedBooking.setBooker(user);
-        savedBooking.setStart(creationDto.getStart());
-        savedBooking.setEnd(creationDto.getEnd());
         when(bookingRepo.save(any(Booking.class)))
                 .thenReturn(savedBooking);
         BookingResponseDto result = bookingService.approveBooking(item.getOwner(), booking.getId(), true);
@@ -315,8 +291,8 @@ public class BookingServiceTest {
         assertEquals(result.get(0).getId(), booking.getId());
         assertEquals(result.get(0).getBooker().getId(), user.getId());
         assertEquals(result.get(0).getItem().getId(), item.getId());
-        assertEquals(result.get(0).getEnd(), creationDto.getEnd());
-        assertEquals(result.get(0).getStart(), creationDto.getStart());
+        assertEquals(result.get(0).getEnd(), bookingCreationDto.getEnd());
+        assertEquals(result.get(0).getStart(), bookingCreationDto.getStart());
     }
 
     @Test
@@ -343,7 +319,7 @@ public class BookingServiceTest {
         when(itemService.getItem(anyLong()))
                 .thenReturn(item);
 
-        assertThatThrownBy(() -> bookingService.createBooking(user.getId(), creationDto))
+        assertThatThrownBy(() -> bookingService.createBooking(user.getId(), bookingCreationDto))
                 .isInstanceOf(ItemNotFoundException.class)
                 .message().isEqualTo("Владелец не должен бронировать бронировать свою вещь");
     }
@@ -356,19 +332,21 @@ public class BookingServiceTest {
         when(itemService.getItem(anyLong()))
                 .thenReturn(item);
 
-        assertThatThrownBy(() -> bookingService.createBooking(user.getId(), creationDto))
+        assertThatThrownBy(() -> bookingService.createBooking(user.getId(), bookingCreationDto))
                 .isInstanceOf(ItemNotAvailableException.class)
                 .message().isEqualTo(String.format("Вещь (%s) недоступна", item.getName()));
     }
 
     @Test
     void getIllegalUserExceptionTest() {
+        User userLocal = ObjectSupplier.getDefaultUser();
+        userLocal.setId(2L);
         when(itemService.getItem(anyLong()))
                 .thenReturn(item);
         when(bookingRepo.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(booking));
 
-        assertThatThrownBy(() -> bookingService.approveBooking(user.getId(), booking.getId(), true))
+        assertThatThrownBy(() -> bookingService.approveBooking(userLocal.getId(), booking.getId(), true))
                 .isInstanceOf(IllegalUserException.class)
                 .message().isEqualTo("Подтвердить бронированиие может только владелец вещи");
     }

@@ -14,9 +14,9 @@ import ru.practicum.shareit.item.exceptions.IllegalUserException;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailableException;
 import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -50,44 +50,13 @@ public class ItemControllerTest {
 
     @BeforeEach
     void setUp() {
-        createDto = ItemCreateDto.builder()
-                .name("Item")
-                .description("Item description")
-                .available(true)
-                .build();
-
-        updateDto = ItemUpdateDto.builder()
-                .name("ItemUpdate")
-                .description("Item update description")
-                .available(false)
-                .build();
-
-        responseDto = ItemResponseDto.builder()
-                .id(1L)
-                .description("Item description")
-                .available(true)
-                .name("Item")
-                .build();
-
-        updatedResponseDto = ItemResponseDto.builder()
-                .id(1L)
-                .name("ItemUpdate")
-                .description("Item update description")
-                .available(false)
-                .build();
-
-        commentCreateDto = new CommentCreateDto("comment");
-        commentResponseDto = new CommentResponseDto(1L, "comment", "Author",
-                LocalDateTime.of(2023, 2,19,14,37, 20));
-        responseForOwner = ItemResponseForOwner.builder()
-                .id(1L)
-                .description("Item description")
-                .available(true)
-                .name("Item")
-                .comments(List.of(commentResponseDto))
-                .lastBooking(null)
-                .nextBooking(null)
-                .build();
+        createDto = ObjectSupplier.getDefaultItemCreateDto();
+        updateDto = ObjectSupplier.getDefaultItemUpdateDto();
+        responseDto = ObjectSupplier.getDefaultItemResponseDto();
+        updatedResponseDto = ObjectSupplier.getUpdatedItemResponseDto();
+        commentCreateDto = ObjectSupplier.getCommentCreateDto();
+        commentResponseDto = ObjectSupplier.getCommentResponseDto();
+        responseForOwner = ObjectSupplier.getItemResponseForOwner();
     }
 
     @Test

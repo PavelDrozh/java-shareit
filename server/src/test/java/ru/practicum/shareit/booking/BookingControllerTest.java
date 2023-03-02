@@ -17,10 +17,10 @@ import ru.practicum.shareit.booking.exceptions.NotUpdatedStatusException;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.dto.ItemInfoInBooking;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -45,36 +45,16 @@ public class BookingControllerTest {
 
     private BookingCreationDto creationDto;
     private BookingResponseDto responseDto;
+    UserResponseDto user;
+    ItemInfoInBooking itemInfoInBooking;
 
     @BeforeEach
     void setUp() {
         mapper.registerModule(new JavaTimeModule());
-        creationDto = new BookingCreationDto();
-        creationDto.setItemId(1L);
-        creationDto.setStart(LocalDateTime.of(2023, 2,20,14,37, 20));
-        creationDto.setEnd(LocalDateTime.of(2023, 2,21,14,37, 20));
-
-        UserResponseDto user = UserResponseDto.builder()
-                .id(1L)
-                .name("UserName")
-                .email("email@yandex.ru")
-                .build();
-
-        ItemInfoInBooking itemInfoInBooking = ItemInfoInBooking.builder()
-                .id(1L)
-                .description("Item description")
-                .available(true)
-                .name("Item")
-                .build();
-
-        responseDto = BookingResponseDto.builder()
-                .id(1L)
-                .end(creationDto.getEnd())
-                .start(creationDto.getStart())
-                .booker(user)
-                .item(itemInfoInBooking)
-                .status(BookStatus.WAITING)
-                .build();
+        creationDto = ObjectSupplier.getDefaultBookingCreateDto();
+        user = ObjectSupplier.getDefaultUserResponse();
+        itemInfoInBooking = ObjectSupplier.getDefaultItemInfo();
+        responseDto = ObjectSupplier.getDefaultBookingResponseDto();
     }
 
     @Test

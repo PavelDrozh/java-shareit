@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 import ru.practicum.shareit.user.dto.UserCreatorDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -47,22 +48,10 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-
-        userDto = UserResponseDto.builder()
-                .id(1L)
-                .name("UserName")
-                .email("email@yandex.ru")
-                .build();
-
-        userCreatorDto = new UserCreatorDto("UserName", "email@yandex.ru");
-
-        updatedUserDto = UserResponseDto.builder()
-                .id(1L)
-                .name("UpdatedUserName")
-                .email("updatedEmail@yandex.ru")
-                .build();
-
-        dtoForUpdating = new UserUpdateDto("UpdatedUserName", "updatedEmail@yandex.ru");
+        userDto = ObjectSupplier.getUserResponseDto();
+        userCreatorDto = ObjectSupplier.getDefaultUserCreator();
+        updatedUserDto = ObjectSupplier.getUpdatedUserResponseDto();
+        dtoForUpdating = ObjectSupplier.getDefaultUserUpdate();
     }
 
     @Test

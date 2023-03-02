@@ -13,9 +13,9 @@ import ru.practicum.shareit.request.dto.ItemRequestCreatorDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.exceptions.ItemRequestNotFound;
 import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -45,14 +45,9 @@ public class ItemRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        createDto = new ItemRequestCreatorDto();
-        createDto.setDescription("Description for request");
+        createDto = ObjectSupplier.getDefaultItemRequestCreateDto();
 
-        responseDto = ItemRequestResponseDto.builder()
-                .id(1L)
-                .description("Description for request")
-                .created(LocalDateTime.of(2023, 2,19,14,37, 20))
-                .build();
+        responseDto = ObjectSupplier.getItemRequestResponseDto();
     }
 
     @Test

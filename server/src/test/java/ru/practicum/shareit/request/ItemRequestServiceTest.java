@@ -17,11 +17,10 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +38,6 @@ public class ItemRequestServiceTest {
     ItemRequestRepository repository;
     ItemMapper itemMapper;
     UserService userService;
-
     User user;
     ItemRequestCreatorDto itemRequestCreatorDto;
     ItemRequest itemRequest;
@@ -54,17 +52,9 @@ public class ItemRequestServiceTest {
         itemMapper = new ItemMapperImpl();
         itemRepository = mock(ItemRepository.class);
         itemRequestService = new ItemRequestServiceImpl(mapper, repository, itemMapper, userService, itemRepository);
-        user = new User();
-        user.setId(1L);
-        user.setName("User");
-        user.setEmail("email@yandex.ru");
-        itemRequestCreatorDto = new ItemRequestCreatorDto();
-        itemRequestCreatorDto.setDescription("Request description");
-        itemRequest = new ItemRequest();
-        itemRequest.setCreator(user);
-        itemRequest.setCreated(LocalDateTime.of(2023, 2,19,14,37, 20));
-        itemRequest.setDescription(itemRequestCreatorDto.getDescription());
-        itemRequest.setId(1L);
+        user = ObjectSupplier.getDefaultUser();
+        itemRequestCreatorDto = ObjectSupplier.getDefaultItemRequestCreateDto();
+        itemRequest = ObjectSupplier.getDefaultItemRequest();
     }
 
     @Test
@@ -114,14 +104,7 @@ public class ItemRequestServiceTest {
 
     @Test
     void getRequestByIdTest() {
-        Item item = new Item();
-        item.setId(1L);
-        item.setName("Item Name");
-        item.setOwner(1L);
-        item.setDescription("Item Description");
-        item.setAvailable(true);
-        item.setRequest(itemRequest);
-        item.setComments(new ArrayList<>());
+        Item item = ObjectSupplier.getDefaultItem();
         when(userService.getUser(any(Long.class)))
                 .thenReturn(user);
         when(repository.findById(any(Long.class)))

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.supplier.ObjectSupplier;
 import ru.practicum.shareit.user.dto.UserCreatorDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -39,12 +40,9 @@ public class UserServiceTest {
         userRepository = mock(UserRepository.class);
         mapper = new UserMapperImpl();
         userService = new UserService(userRepository, mapper);
-        user = new User();
-        user.setId(1L);
-        user.setName("User");
-        user.setEmail("email@yandex.ru");
-        userCreatorDto = new UserCreatorDto("UserName", "email@yandex.ru");
-        userUpdateDto = new UserUpdateDto("UpdatedName", "updatedEmail@yandex.ru");
+        user = ObjectSupplier.getDefaultUser();
+        userCreatorDto = ObjectSupplier.getDefaultUserCreator();
+        userUpdateDto = ObjectSupplier.getDefaultUserUpdate();
     }
 
     @Test
