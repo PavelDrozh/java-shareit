@@ -1,0 +1,1762 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ShareIt service API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "description": "Generated server url",
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "description": "API для работы с заявками на аренду",
+      "name": "Bookings"
+    },
+    {
+      "description": "API для работы с вещами",
+      "name": "Items"
+    },
+    {
+      "description": "API для работы с запросами на аренду",
+      "name": "Requests"
+    },
+    {
+      "description": "API для работы с пользователями",
+      "name": "Users"
+    }
+  ],
+  "paths": {
+    "/bookings": {
+      "get": {
+        "operationId": "getUsersBookings",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество заявок на аренду, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество заявок на аренду в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "description": "Фильтрация для выбора заявок на аренду",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Заявки на аренду найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск заявок на аренду вещей пользователя",
+        "tags": [
+          "Bookings"
+        ]
+      },
+      "post": {
+        "operationId": "createBooking",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingCreationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Заявка на аренду создана"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Вещи c id = 1 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Создание заявки на аренду вещи",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{bookingId}": {
+      "get": {
+        "operationId": "getBookingById",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID ЗАявки на аренду",
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Заявка на аренду найдена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_Found",
+                  "message": "Бронирование с id = 2 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Поиск заявки на аренду вещи",
+        "tags": [
+          "Bookings"
+        ]
+      },
+      "patch": {
+        "operationId": "updateBooking",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID ЗАявки на аренду",
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "Статус одобрения заявки",
+            "in": "query",
+            "name": "approved",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Заявка на аренду одобрена/отклонена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Бронирование с id = 2 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Одобрение заявки на аренду вещи пользователем",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/owner": {
+      "get": {
+        "operationId": "getOwnersBookings",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество заявок на аренду, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество заявок на аренду в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "description": "Фильтрация для выбора заявок на аренду",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Заявки на аренду найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск заявок на аренду вещей созданные пользователем",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/items": {
+      "get": {
+        "operationId": "getItems",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество заявок на аренду, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество заявок на аренду в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "description": "Фильтрация для выбора заявок на аренду",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Вещи найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск вещей пользователя",
+        "tags": [
+          "Items"
+        ]
+      },
+      "post": {
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Вещь создана"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Вещи c id = 1 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Создание вещи",
+        "tags": [
+          "Items"
+        ]
+      }
+    },
+    "/items/{itemId}": {
+      "get": {
+        "operationId": "getBookingById",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Вещь найдена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск вещи по ее ID",
+        "tags": [
+          "Items"
+        ]
+      },
+      "patch": {
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Информация о вещи обновлена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Вещи c id = 1 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Обновление информации о вещи",
+        "tags": [
+          "Items"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteItem",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Вещь успешно удалена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Вещи c id = 1 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Удаление вещи",
+        "tags": [
+          "Items"
+        ]
+      }
+    },
+    "/items/search": {
+      "get": {
+        "operationId": "getItemsByNameOrDescription",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество вещей, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество вещей в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "description": "Ключевое слово для поиска",
+            "in": "query",
+            "name": "text",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Вещи найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск вещей пользователя по ключевому слову",
+        "tags": [
+          "Items"
+        ]
+      }
+    },
+    "/items/{itemId}/comment": {
+      "post": {
+        "operationId": "createCommentToItem",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Комментарий создан"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Вещи c id = 1 не найдено"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Создание комментария к вещи после ее использования",
+        "tags": [
+          "Items"
+        ]
+      }
+    },
+    "/requests": {
+      "get": {
+        "operationId": "getRequests",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Запросы найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск запросов пользователя",
+        "tags": [
+          "Requests"
+        ]
+      },
+      "post": {
+        "operationId": "createRequest",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemRequestCreatorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Запрос создан"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Создание запроса",
+        "tags": [
+          "Requests"
+        ]
+      }
+    },
+    "/requests/all": {
+      "get": {
+        "operationId": "getAllRequests",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество запросов, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество запросов в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Запросы найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск запросов пользователя (с пагинацией)",
+        "tags": [
+          "Requests"
+        ]
+      }
+    },
+    "/requests/{requestId}": {
+      "get": {
+        "operationId": "getRequestById",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "ID запроса",
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Запрос найден"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск запроса пользователя по ID",
+        "tags": [
+          "Requests"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "getAllUsers",
+        "parameters": [
+          {
+            "description": "количество пользователей, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество пользователей в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Пользователи найдены"
+          }
+        },
+        "summary": "Поиск пользователей",
+        "tags": [
+          "Users"
+        ]
+      },
+      "post": {
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreatorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Пользователь создан"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Создание пользователя",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Пользователь найден"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Required request header 'X-Sharer-User-Id' for method parameter type Long is present but converted to null"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Пользователь c id = 1 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Поиск пользователя по Id",
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Пользователь обновлен"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Failed to convert property value of type java.lang.String to required type java.lang.Integer for property id; nested exception is java.lang.NumberFormatException"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Пользователь c id = 1 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Обновление пользователя",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "description": "ID пользователя",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseEntity"
+                }
+              }
+            },
+            "description": "Пользователь удален"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "message": "Failed to convert property value of type java.lang.String to required type java.lang.Integer for property id; nested exception is java.lang.NumberFormatException"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "message": "Пользователь c id = 1 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Не удалось найти требуемый объект"
+          }
+        },
+        "summary": "Удаление пользователя",
+        "tags": [
+          "Users"
+        ]
+      }
+    }
+  },
+
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Сообщение об ошибке",
+            "example": "Что-то пошло не так"
+          },
+          "status": {
+            "type": "string",
+            "description": "Код статуса HTTP-ответа",
+            "example": "FORBIDDEN",
+            "enum": [
+              "100 CONTINUE",
+              "101 SWITCHING_PROTOCOLS",
+              "102 PROCESSING",
+              "103 CHECKPOINT",
+              "200 OK",
+              "201 CREATED",
+              "202 ACCEPTED",
+              "203 NON_AUTHORITATIVE_INFORMATION",
+              "204 NO_CONTENT",
+              "205 RESET_CONTENT",
+              "206 PARTIAL_CONTENT",
+              "207 MULTI_STATUS",
+              "208 ALREADY_REPORTED",
+              "226 IM_USED",
+              "300 MULTIPLE_CHOICES",
+              "301 MOVED_PERMANENTLY",
+              "302 FOUND",
+              "302 MOVED_TEMPORARILY",
+              "303 SEE_OTHER",
+              "304 NOT_MODIFIED",
+              "305 USE_PROXY",
+              "307 TEMPORARY_REDIRECT",
+              "308 PERMANENT_REDIRECT",
+              "400 BAD_REQUEST",
+              "401 UNAUTHORIZED",
+              "402 PAYMENT_REQUIRED",
+              "403 FORBIDDEN",
+              "404 NOT_FOUND",
+              "405 METHOD_NOT_ALLOWED",
+              "406 NOT_ACCEPTABLE",
+              "407 PROXY_AUTHENTICATION_REQUIRED",
+              "408 REQUEST_TIMEOUT",
+              "409 CONFLICT",
+              "410 GONE",
+              "411 LENGTH_REQUIRED",
+              "412 PRECONDITION_FAILED",
+              "413 PAYLOAD_TOO_LARGE",
+              "413 REQUEST_ENTITY_TOO_LARGE",
+              "414 URI_TOO_LONG",
+              "414 REQUEST_URI_TOO_LONG",
+              "415 UNSUPPORTED_MEDIA_TYPE",
+              "416 REQUESTED_RANGE_NOT_SATISFIABLE",
+              "417 EXPECTATION_FAILED",
+              "418 I_AM_A_TEAPOT",
+              "419 INSUFFICIENT_SPACE_ON_RESOURCE",
+              "420 METHOD_FAILURE",
+              "421 DESTINATION_LOCKED",
+              "422 UNPROCESSABLE_ENTITY",
+              "423 LOCKED",
+              "424 FAILED_DEPENDENCY",
+              "425 TOO_EARLY",
+              "426 UPGRADE_REQUIRED",
+              "428 PRECONDITION_REQUIRED",
+              "429 TOO_MANY_REQUESTS",
+              "431 REQUEST_HEADER_FIELDS_TOO_LARGE",
+              "451 UNAVAILABLE_FOR_LEGAL_REASONS",
+              "500 INTERNAL_SERVER_ERROR",
+              "501 NOT_IMPLEMENTED",
+              "502 BAD_GATEWAY",
+              "503 SERVICE_UNAVAILABLE",
+              "504 GATEWAY_TIMEOUT",
+              "505 HTTP_VERSION_NOT_SUPPORTED",
+              "506 VARIANT_ALSO_NEGOTIATES",
+              "507 INSUFFICIENT_STORAGE",
+              "508 LOOP_DETECTED",
+              "509 BANDWIDTH_LIMIT_EXCEEDED",
+              "510 NOT_EXTENDED",
+              "511 NETWORK_AUTHENTICATION_REQUIRED"
+            ]
+          }
+        },
+        "description": "Сведения об ошибке"
+      },
+      "BookingCreationDto": {
+        "type": "object",
+        "required": [
+          "itemId",
+          "start",
+          "end"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "integer",
+            "description": "ID вещи которую необходимо забронировать",
+            "format": "int64",
+            "example": 1
+          },
+          "start": {
+            "type": "string",
+            "description": "Дата и время начала бронирования (не может быть раньше текущего времени)",
+            "example": "2022-09-06 11:00:23",
+            "format": "yyyy-MM-dd HH:mm:ss"
+          },
+          "end": {
+            "type": "string",
+            "description": "Дата и время окончания бронирвания (не может быть раньше времени начала бронирования)",
+            "example": "2022-09-06 21:00:23",
+            "format": "yyyy-MM-dd HH:mm:ss"
+          }
+        },
+        "description": "DTO для создания заявки на бронирование вещи"
+      },
+
+      "State": {
+        "type": "string",
+        "description": "Список фильтрации состояний заявок на аренду вещей",
+        "example": "CURRENT",
+        "default": "ALL",
+        "enum": [
+          "ALL",
+          "CURRENT",
+          "PAST",
+          "FUTURE",
+          "WAITING",
+          "REJECTED"
+        ]
+      },
+      "ResponseEntity": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "description": "Тело ответа",
+            "example": "[{\"id\": 1, \"name\": \"updateName\",\"email\": \"updateName@user.com\"},{\"id\": 4,\"name\": \"user\",\"email\": \"user@user.com\"},{\"id\": 5,\"name\": \"other\",\"email\": \"other@other.com\"}] "
+          },
+          "headers": {
+            "type": "string",
+            "description": "Заголовки ответа",
+            "example": "[\"X-Sharer-User-Id=12\"]"
+          },
+          "status": {
+            "type": "string",
+            "description": "Код статуса HTTP-ответа",
+            "example": "OK",
+            "enum": [
+              "100 CONTINUE",
+              "101 SWITCHING_PROTOCOLS",
+              "102 PROCESSING",
+              "103 CHECKPOINT",
+              "200 OK",
+              "201 CREATED",
+              "202 ACCEPTED",
+              "203 NON_AUTHORITATIVE_INFORMATION",
+              "204 NO_CONTENT",
+              "205 RESET_CONTENT",
+              "206 PARTIAL_CONTENT",
+              "207 MULTI_STATUS",
+              "208 ALREADY_REPORTED",
+              "226 IM_USED",
+              "300 MULTIPLE_CHOICES",
+              "301 MOVED_PERMANENTLY",
+              "302 FOUND",
+              "302 MOVED_TEMPORARILY",
+              "303 SEE_OTHER",
+              "304 NOT_MODIFIED",
+              "305 USE_PROXY",
+              "307 TEMPORARY_REDIRECT",
+              "308 PERMANENT_REDIRECT",
+              "400 BAD_REQUEST",
+              "401 UNAUTHORIZED",
+              "402 PAYMENT_REQUIRED",
+              "403 FORBIDDEN",
+              "404 NOT_FOUND",
+              "405 METHOD_NOT_ALLOWED",
+              "406 NOT_ACCEPTABLE",
+              "407 PROXY_AUTHENTICATION_REQUIRED",
+              "408 REQUEST_TIMEOUT",
+              "409 CONFLICT",
+              "410 GONE",
+              "411 LENGTH_REQUIRED",
+              "412 PRECONDITION_FAILED",
+              "413 PAYLOAD_TOO_LARGE",
+              "413 REQUEST_ENTITY_TOO_LARGE",
+              "414 URI_TOO_LONG",
+              "414 REQUEST_URI_TOO_LONG",
+              "415 UNSUPPORTED_MEDIA_TYPE",
+              "416 REQUESTED_RANGE_NOT_SATISFIABLE",
+              "417 EXPECTATION_FAILED",
+              "418 I_AM_A_TEAPOT",
+              "419 INSUFFICIENT_SPACE_ON_RESOURCE",
+              "420 METHOD_FAILURE",
+              "421 DESTINATION_LOCKED",
+              "422 UNPROCESSABLE_ENTITY",
+              "423 LOCKED",
+              "424 FAILED_DEPENDENCY",
+              "425 TOO_EARLY",
+              "426 UPGRADE_REQUIRED",
+              "428 PRECONDITION_REQUIRED",
+              "429 TOO_MANY_REQUESTS",
+              "431 REQUEST_HEADER_FIELDS_TOO_LARGE",
+              "451 UNAVAILABLE_FOR_LEGAL_REASONS",
+              "500 INTERNAL_SERVER_ERROR",
+              "501 NOT_IMPLEMENTED",
+              "502 BAD_GATEWAY",
+              "503 SERVICE_UNAVAILABLE",
+              "504 GATEWAY_TIMEOUT",
+              "505 HTTP_VERSION_NOT_SUPPORTED",
+              "506 VARIANT_ALSO_NEGOTIATES",
+              "507 INSUFFICIENT_STORAGE",
+              "508 LOOP_DETECTED",
+              "509 BANDWIDTH_LIMIT_EXCEEDED",
+              "510 NOT_EXTENDED",
+              "511 NETWORK_AUTHENTICATION_REQUIRED"
+            ]
+          }
+        },
+        "description": "Сведения об ошибке"
+      },
+      "CommentCreateDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Текст комментария",
+            "required": true,
+            "example": "Отличная вещь для аренды"
+          }
+        },
+        "description": "Объект для создания комментария"
+      },
+      "ItemCreateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Наименование вещи",
+            "required": true,
+            "example": "Велосипед"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи",
+            "required": true,
+            "example": "Горный велосипед для катния по лесу"
+          },
+          "available": {
+            "type": "boolean",
+            "description": "Статус вещи",
+            "required": true,
+            "example": "Доступна ли вещь для аренды"
+          },
+          "requestId": {
+            "type": "integer",
+            "description": "Номер запроса по которому вещь была предложена для аренды",
+            "format": "int64",
+            "example": "12"
+          }
+        },
+        "description": "Объект для создания вещи"
+      },
+      "ItemUpdateDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "required": true,
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Наименование вещи",
+            "example": "Велосипед"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи",
+            "example": "Горный велосипед для катния по лесу"
+          },
+          "available": {
+            "type": "boolean",
+            "required": true,
+            "description": "Статус вещи",
+            "example": "Доступна ли вещь для аренды"
+          }
+        },
+        "description": "Объект для обновления вещи (обновление только указанных параметров)"
+      },
+      "ItemRequestCreatorDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Описание запроса на аренду вещи",
+            "example": "Хотел бы воспользоваться щёткой для обуви"
+          }
+        },
+        "description": "Запрос на аренду вещи"
+      },
+      "UserCreatorDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Наименование вещи",
+            "example": "Велосипед",
+            "required": true
+          },
+          "email": {
+            "type": "string",
+            "description": "Email пользователя",
+            "example": "user@user.com",
+            "required": true
+          }
+        },
+        "description": "Объект для создания пользователя"
+      },
+      "UserUpdateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Наименование вещи",
+            "example": "Велосипед",
+            "required": false
+          },
+          "email": {
+            "type": "string",
+            "description": "Email пользователя",
+            "example": "user@user.com",
+            "required": false
+          }
+        },
+        "description": "Объект для обновления пользователя (обновление только указанных параметров)"
+      }
+    }
+  }
+}
